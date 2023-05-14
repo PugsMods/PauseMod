@@ -5,7 +5,6 @@
   "compatibilityLevel": "JAVA_17",
   "refmap": "pausemod.refmap.json",
   "mixins": [
-    "EffectMixin",
     "MobEffectMixin",
     "PlayerMixin",
     "FoodMixin"

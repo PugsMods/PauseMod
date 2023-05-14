@@ -1,11 +1,12 @@
 package com.pugzarecute.pausemod.mixin;
 
+import com.pugzarecute.pausemod.Pausemod;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.event.ForgeEventFactory;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
@@ -24,4 +25,20 @@ public class PlayerMixin {
             cir.cancel();
         }
     }
+    @Redirect(at = @At(value="INVOKE",target = "Lnet/minecraftforge/event/ForgeEventFactory;onPlayerPreTick(Lnet/minecraft/world/entity/player/Player;)V"),method = "Lnet/minecraft/world/entity/player/Player;tick()V")
+    private void tickHookPre(Player player){
+        if(player.level.dimension().location().toString().equals("minecraft:the_nether")){
+            Pausemod.playerTickHook(player);
+        }else{
+            ForgeEventFactory.onPlayerPreTick(player);
+        }
+    }
+
+    @Redirect(at = @At(value="INVOKE",target = "Lnet/minecraftforge/event/ForgeEventFactory;onPlayerPostTick(Lnet/minecraft/world/entity/player/Player;)V"),method = "Lnet/minecraft/world/entity/player/Player;tick()V")
+    private void tickHookPost(Player player){
+        if(!player.level.dimension().location().toString().equals("minecraft:the_nether")){
+            ForgeEventFactory.onPlayerPostTick(player);
+        }
+    }
+
 }
